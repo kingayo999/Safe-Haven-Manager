@@ -1,0 +1,112 @@
+{% extends 'layout.html' %}
+{% block content %}
+<!-- Header -->
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-5">
+  <div>
+    <h1 class="display-title mb-0">My Vault</h1>
+    <p class="text-muted fs-5">Manage your credentials</p>
+  </div>
+  <div class="d-flex gap-2 mt-3 mt-md-0">
+    <a href="{{ url_for('export') }}" class="btn btn-outline-secondary">
+      <i class="bi bi-download me-2"></i>Export
+    </a>
+    <a href="{{ url_for('logout') }}" class="btn btn-outline-secondary">
+      <i class="bi bi-box-arrow-right me-2"></i>Lock
+    </a>
+  </div>
+</div>
+
+<!-- Add New Entry Card (Optional simplified or same as home) -->
+<div class="collapse mb-4" id="addFormCollapse">
+  <div class="card border-0 shadow-sm bg-white">
+    <div class="card-body">
+      <form method="post" action="{{ url_for('add') }}">
+        <div class="row g-2">
+          <div class="col-md-4"><input class="form-control" name="service" placeholder="Service" required></div>
+          <div class="col-md-3"><input class="form-control" name="username" placeholder="Username" required></div>
+          <div class="col-md-3"><input class="form-control" name="password" placeholder="Password" required></div>
+          <div class="col-md-2"><button class="btn btn-primary w-100" type="submit">Add</button></div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div class="text-end mb-4">
+  <button class="btn btn-brand" type="button" data-bs-toggle="collapse" data-bs-target="#addFormCollapse">
+    <i class="bi bi-plus-lg me-2"></i>Add New Item
+  </button>
+</div>
+
+<!-- Grid -->
+<div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+  {% for e in entries %}
+  <div class="col">
+    <div class="card h-100 border-0 shadow-sm hover-lift">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-start mb-3">
+          <div class="d-flex align-items-center">
+            <div class="service-badge badge-c{{ (loop.index0 % 5) + 1 }} me-3">
+              {{ e.service[:1].upper() }}
+            </div>
+            <h5 class="card-title mb-0 fw-bold">{{ e.service }}</h5>
+          </div>
+          <div class="dropdown">
+            <button class="btn btn-sm btn-link text-muted p-0" type="button" data-bs-toggle="dropdown">
+              <i class="bi bi-three-dots-vertical fs-5"></i>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end border-0 shadow">
+              <li><a class="dropdown-item" href="{{ url_for('edit', idx=loop.index0) }}"><i
+                    class="bi bi-pencil me-2"></i>Edit</a></li>
+              <li>
+                <hr class="dropdown-divider">
+              </li>
+              <li>
+                <form method="post" action="{{ url_for('delete', idx=loop.index0) }}">
+                  <button class="dropdown-item text-danger" type="submit"><i
+                      class="bi bi-trash me-2"></i>Delete</button>
+                </form>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <small class="text-muted d-block uppercase-xs">Username</small>
+          <div class="text-truncate" title="{{ e.username }}">{{ e.username }}</div>
+        </div>
+
+        <div>
+          <small class="text-muted d-block uppercase-xs">Password</small>
+          <div class="input-group input-group-sm">
+            <input id="pwd-{{ loop.index0 }}" type="password" class="form-control bg-light border-0"
+              value="{{ e.password }}" readonly>
+            <button class="btn btn-light text-muted" type="button" onclick="togglePwd({{ loop.index0 }})">
+              <i class="bi bi-eye"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% else %}
+  <div class="col-12">
+    <div class="text-center py-5 opacity-50">
+      <i class="bi bi-safe fs-1 d-block mb-3"></i>
+      <p>No items found.</p>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+  function togglePwd(i) {
+    const el = document.getElementById('pwd-' + i);
+    if (!el) return;
+    el.type = (el.type === 'password') ? 'text' : 'password';
+  }
+</script>
+{% endblock %}

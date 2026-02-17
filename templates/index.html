@@ -1,0 +1,78 @@
+{% extends 'layout.html' %}
+{% block content %}
+<div class="row justify-content-center align-items-center" style="min-height: 60vh;">
+  <div class="col-12 col-md-8 col-lg-5">
+
+    <!-- Logo/Brand Hero for Mobile/Desktop -->
+    <div class="text-center mb-4">
+      <div class="d-inline-flex align-items-center justify-content-center bg-white p-3 rounded-circle shadow-sm mb-3"
+        style="width: 80px; height: 80px;">
+        <img src="/static/img/logo.svg" alt="Logo" style="width: 40px; height: 40px;">
+      </div>
+      <h1 class="display-title mb-1">Get Started</h1>
+      <p class="text-muted">Create your secure vault today</p>
+    </div>
+
+    <div class="card border-0 shadow-lg">
+      <div class="card-body p-4 p-md-5">
+        <h4 class="mb-4 font-weight-bold text-center">Create Account</h4>
+        <form method="post" action="{{ url_for('signup') }}" class="needs-validation">
+          <div class="mb-3">
+            <label class="form-label">Username</label>
+            <input class="form-control" name="username" placeholder="Choose a username" required autofocus />
+          </div>
+
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Password</label>
+              <div class="input-group">
+                <input id="signup-pwd" class="form-control border-end-0" type="password" name="password"
+                  placeholder="••••••" required />
+                <button type="button" class="btn btn-outline-secondary border-start-0"
+                  onclick="toggleField('signup-pwd', this)">
+                  <i class="bi bi-eye"></i>
+                </button>
+              </div>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Confirm</label>
+              <div class="input-group">
+                <input id="signup-confirm" class="form-control border-end-0" type="password" name="confirm"
+                  placeholder="••••••" required />
+                <button type="button" class="btn btn-outline-secondary border-start-0"
+                  onclick="toggleField('signup-confirm', this)">
+                  <i class="bi bi-eye"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="d-grid mt-4">
+            <button class="btn btn-brand btn-lg" type="submit">Sign Up</button>
+          </div>
+        </form>
+      </div>
+      <div class="card-footer bg-light-subtle text-center py-3 border-top-0">
+        <span class="text-muted small">Already have an account?</span>
+        <a href="{{ url_for('login') }}" class="text-primary fw-bold text-decoration-none ms-1">Log In</a>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  function toggleField(id, btn) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const icon = btn.querySelector('i');
+    if (el.type === 'password') {
+      el.type = 'text';
+      if (icon) { icon.classList.remove('bi-eye'); icon.classList.add('bi-eye-slash'); }
+    } else {
+      el.type = 'password';
+      if (icon) { icon.classList.remove('bi-eye-slash'); icon.classList.add('bi-eye'); }
+    }
+  }
+</script>
+{% endblock %}

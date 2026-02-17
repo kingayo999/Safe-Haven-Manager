@@ -1,0 +1,59 @@
+{% extends 'layout.html' %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-12 col-md-8 col-lg-6">
+    <div class="card border-0 shadow-lg">
+      <div class="card-header bg-white border-bottom-0 pt-4 pb-0 items-center">
+        <h4 class="mb-0 fw-bold">Edit Entry</h4>
+      </div>
+      <div class="card-body p-4">
+        <form method="post">
+          <div class="mb-3">
+            <label class="form-label">Service</label>
+            <input class="form-control" name="service" value="{{ entry.service }}" required />
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Username</label>
+            <input class="form-control" name="username" value="{{ entry.username }}" required />
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Password</label>
+            <div class="input-group">
+              <input id="edit-pwd" class="form-control" name="password" value="{{ entry.password }}" type="text"
+                required />
+              <button id="edit-pwd-btn" type="button" class="btn btn-outline-secondary" onclick="toggleEditPwd()">
+                <i class="bi bi-eye-slash"></i>
+              </button>
+            </div>
+          </div>
+          <div class="mb-4">
+            <label class="form-label">Notes</label>
+            <textarea class="form-control" name="notes" rows="3">{{ entry.notes }}</textarea>
+          </div>
+
+          <div class="d-flex justify-content-end gap-2">
+            <a class="btn btn-outline-secondary px-4" href="{{ url_for('vault') }}">Cancel</a>
+            <button class="btn btn-brand px-4" type="submit">Save Changes</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function toggleEditPwd() {
+    const el = document.getElementById('edit-pwd');
+    const btn = document.getElementById('edit-pwd-btn');
+    if (!el) return;
+    const icon = btn.querySelector('i');
+    if (el.type === 'password') {
+      el.type = 'text';
+      if (icon) { icon.classList.remove('bi-eye'); icon.classList.add('bi-eye-slash'); }
+    } else {
+      el.type = 'password';
+      if (icon) { icon.classList.remove('bi-eye-slash'); icon.classList.add('bi-eye'); }
+    }
+  }
+</script>
+{% endblock %}

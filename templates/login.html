@@ -1,0 +1,80 @@
+{% extends 'layout.html' %}
+{% block content %}
+<div class="row justify-content-center align-items-center" style="min-height: 60vh;">
+  <div class="col-12 col-md-8 col-lg-5">
+
+    <!-- Header -->
+    <div class="text-center mb-4">
+      <div class="d-inline-flex align-items-center justify-content-center bg-white p-3 rounded-circle shadow-sm mb-3"
+        style="width: 80px; height: 80px;">
+        <i class="bi bi-shield-lock text-primary fs-1"></i>
+      </div>
+      <h1 class="display-title mb-1">Welcome Back</h1>
+      <p class="text-muted">Access your secure vault</p>
+    </div>
+
+    <div class="card border-0 shadow-lg">
+      <div class="card-body p-4 p-md-5">
+        <form method="post">
+          <div class="mb-4">
+            <label class="form-label">Username</label>
+            <div class="input-group">
+              <span class="input-group-text bg-light border-end-0 text-muted"><i class="bi bi-person"></i></span>
+              <input class="form-control border-start-0 ps-0" name="username" placeholder="Enter your username"
+                required />
+            </div>
+          </div>
+
+          <div class="mb-4">
+            <div class="d-flex justify-content-between align-items-center mb-1">
+              <label class="form-label mb-0">Password</label>
+              <a href="#" class="small text-decoration-none" tabindex="-1">Forgot?</a>
+            </div>
+            <div class="input-group">
+              <span class="input-group-text bg-light border-end-0 text-muted"><i class="bi bi-key"></i></span>
+              <input id="login-pwd" class="form-control border-start-0 ps-0 border-end-0" type="password"
+                name="password" placeholder="••••••" required />
+              <button type="button" class="btn btn-outline-secondary border-start-0"
+                onclick="toggleField('login-pwd', this)">
+                <i class="bi bi-eye"></i>
+              </button>
+            </div>
+          </div>
+
+          <div class="d-grid mt-4">
+            <button class="btn btn-brand btn-lg" type="submit">Log In</button>
+          </div>
+        </form>
+
+        <div class="d-grid mt-3">
+          <form method="post" action="{{ url_for('demo_login') }}">
+            <button class="btn btn-outline-secondary w-100" type="submit">
+              <i class="bi bi-joystick me-2"></i>Try Demo Account
+            </button>
+          </form>
+        </div>
+
+      </div>
+      <div class="card-footer bg-light-subtle text-center py-3 border-top-0">
+        <span class="text-muted small">New here?</span>
+        <a href="{{ url_for('index') }}" class="text-primary fw-bold text-decoration-none ms-1">Create an account</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function toggleField(id, btn) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const icon = btn.querySelector('i');
+    if (el.type === 'password') {
+      el.type = 'text';
+      if (icon) { icon.classList.remove('bi-eye'); icon.classList.add('bi-eye-slash'); }
+    } else {
+      el.type = 'password';
+      if (icon) { icon.classList.remove('bi-eye-slash'); icon.classList.add('bi-eye'); }
+    }
+  }
+</script>
+{% endblock %}

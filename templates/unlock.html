@@ -1,0 +1,67 @@
+{% extends 'layout.html' %}
+{% block content %}
+<div class="row justify-content-center align-items-center" style="min-height: 60vh;">
+  <div class="col-12 col-md-8 col-lg-5">
+
+    <!-- Header -->
+    <div class="text-center mb-4">
+      <div class="d-inline-flex align-items-center justify-content-center bg-white p-3 rounded-circle shadow-sm mb-3"
+        style="width: 80px; height: 80px;">
+        <i class="bi bi-safe2 text-success fs-1"></i>
+      </div>
+      <h1 class="display-title mb-1">Unlock Vault</h1>
+      <p class="text-muted">Enter your master password to decrypt</p>
+    </div>
+
+    <div class="card border-0 shadow-lg">
+      <div class="card-body p-4 p-md-5">
+        <form method="post">
+          <div class="mb-4">
+            <label class="form-label">Master Password</label>
+            <div class="input-group">
+              <span class="input-group-text bg-light border-end-0 text-muted"><i class="bi bi-key-fill"></i></span>
+              <input id="master-pwd" class="form-control border-start-0 ps-0 border-end-0" type="password" name="master"
+                placeholder="Required to decrypt data" required autofocus />
+              <button type="button" class="btn btn-outline-secondary border-start-0"
+                onclick="toggleField('master-pwd', this)">
+                <i class="bi bi-eye"></i>
+              </button>
+            </div>
+          </div>
+
+          <div class="d-grid gap-3">
+            <button class="btn btn-brand btn-lg" name="action" value="unlock" type="submit">
+              <i class="bi bi-unlock-fill me-2"></i>Unlock Vault
+            </button>
+            <div class="text-center">
+              <span class="text-muted small">or</span>
+            </div>
+            <button class="btn btn-outline-secondary" name="action" value="create" type="submit">
+              <i class="bi bi-plus-circle me-2"></i>Create New Vault
+            </button>
+          </div>
+        </form>
+      </div>
+      <div class="card-footer bg-light-subtle text-center py-3 border-top-0">
+        <i class="bi bi-info-circle me-1 text-muted"></i>
+        <span class="text-muted small">Vault password is separate from login</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function toggleField(id, btn) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const icon = btn.querySelector('i');
+    if (el.type === 'password') {
+      el.type = 'text';
+      if (icon) { icon.classList.remove('bi-eye'); icon.classList.add('bi-eye-slash'); }
+    } else {
+      el.type = 'password';
+      if (icon) { icon.classList.remove('bi-eye-slash'); icon.classList.add('bi-eye'); }
+    }
+  }
+</script>
+{% endblock %}

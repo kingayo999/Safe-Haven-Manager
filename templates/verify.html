@@ -1,0 +1,22 @@
+{% extends 'layout.html' %}
+{% block content %}
+  <div class="row justify-content-center">
+    <div class="col-12 col-md-6">
+      <div class="card p-3">
+        <h4>Verify Account</h4>
+        <p>A verification code was sent to your email (demo shows it below).</p>
+        {% if code %}
+          <div class="alert alert-info">Demo verification code: <strong>{{ code }}</strong></div>
+        {% endif %}
+        <form method="post">
+          <input type="hidden" name="username" value="{{ username }}" />
+          <div class="mb-2">
+            <label class="form-label">Verification Code</label>
+            <input class="form-control" name="code" />
+          </div>
+          <button class="btn btn-primary" type="submit">Verify</button>
+        </form>
+      </div>
+    </div>
+  </div>
+{% endblock %}

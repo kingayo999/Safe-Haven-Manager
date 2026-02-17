@@ -1,0 +1,180 @@
+{% extends 'layout.html' %}
+{% block content %}
+<!-- Header / Actions -->
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-5">
+  <div>
+    <h1 class="display-title mb-0">Dashboard</h1>
+    <p class="text-muted fs-5">Welcome back, {{ session.get('username') }}</p>
+  </div>
+  <div class="d-flex gap-2 mt-3 mt-md-0">
+    <a href="{{ url_for('export') }}" class="btn btn-outline-secondary">
+      <i class="bi bi-download me-2"></i>Export
+    </a>
+    <a href="{{ url_for('logout') }}" class="btn btn-outline-secondary">
+      <i class="bi bi-box-arrow-right me-2"></i>Lock Status
+    </a>
+  </div>
+</div>
+
+<!-- Add New Entry Card -->
+<div class="card mb-5 border-0 shadow-lg"
+  style="background: linear-gradient(145deg, rgba(255,255,255,0.9), rgba(255,255,255,0.6));">
+  <div class="card-body p-4">
+    <h5 class="card-title mb-4 text-primary"><i class="bi bi-plus-circle-fill me-2"></i>Quick Add</h5>
+    <form method="post" action="{{ url_for('add') }}">
+      <div class="row g-3">
+        <div class="col-md-4">
+          <div class="form-floating">
+            <input class="form-control" id="serviceIn" name="service" placeholder="Service" required>
+            <label for="serviceIn">Service Name</label>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="form-floating">
+            <input class="form-control" id="userIn" name="username" placeholder="Username" required>
+            <label for="userIn">Username</label>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="form-floating">
+            <input class="form-control" id="passIn" name="password" placeholder="Password" required>
+            <label for="passIn">Password</label>
+          </div>
+        </div>
+        <div class="col-md-2">
+          <button class="btn btn-brand w-100 h-100 d-flex align-items-center justify-content-center" type="submit">
+            <i class="bi bi-save me-2"></i>Save
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Vault Grid -->
+<h4 class="mb-4 font-weight-bold text-muted text-uppercase small ls-1">Your Vault Items</h4>
+
+<div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+  {% for e in entries %}
+  <div class="col">
+    <div class="card h-100 border-0 shadow-sm hover-lift">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-start mb-3">
+          <div class="d-flex align-items-center">
+            <div class="service-badge badge-c{{ (loop.index0 % 5) + 1 }} me-3">
+              {{ e.service[:1].upper() }}
+            </div>
+            <h5 class="card-title mb-0 fw-bold">{{ e.service }}</h5>
+          </div>
+          <div class="dropdown">
+            <button class="btn btn-sm btn-link text-muted p-0" type="button" data-bs-toggle="dropdown">
+              <i class="bi bi-three-dots-vertical fs-5"></i>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end border-0 shadow">
+              <li><a class="dropdown-item" href="#" onclick="viewEntry({{ loop.index0 }}); return false;"><i
+                    class="bi bi-eye me-2"></i>View Details</a></li>
+              <li><a class="dropdown-item" href="{{ url_for('edit', idx=loop.index0) }}"><i
+                    class="bi bi-pencil me-2"></i>Edit</a></li>
+              <li>
+                <hr class="dropdown-divider">
+              </li>
+              <li>
+                <form method="post" action="{{ url_for('delete', idx=loop.index0) }}">
+                  <button class="dropdown-item text-danger" type="submit"><i
+                      class="bi bi-trash me-2"></i>Delete</button>
+                </form>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <small class="text-muted d-block uppercase-xs">Username</small>
+          <div class="text-truncate" title="{{ e.username }}">{{ e.username }}</div>
+        </div>
+
+        <div>
+          <small class="text-muted d-block uppercase-xs">Password</small>
+          <div class="input-group input-group-sm">
+            <input id="pwd-{{ loop.index0 }}" type="password" class="form-control bg-light border-0"
+              value="{{ e.password }}" readonly>
+            <button class="btn btn-light text-muted" type="button" onclick="togglePwd({{ loop.index0 }})">
+              <i class="bi bi-eye"></i>
+            </button>
+            <button class="btn btn-light text-muted" type="button" onclick="copyToClipboard('{{ e.password }}')">
+              <i class="bi bi-clipboard"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% else %}
+  <div class="col-12">
+    <div class="text-center py-5 opacity-50">
+      <i class="bi bi-safe fs-1 d-block mb-3"></i>
+      <p>Your vault is empty. Add your first password above!</p>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+<!-- Lightweight details modal -->
+<div class="modal fade" id="detailModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow-lg pb-3"
+      style="background: rgba(255,255,255,0.95); backdrop-filter: blur(10px);">
+      <div class="modal-header border-0">
+        <h5 class="modal-title fw-bold" id="detailTitle">Entry Details</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="p-3 bg-light rounded-3 font-monospace" id="detailBody"
+          style="white-space: pre-wrap; word-break: break-all;"></div>
+      </div>
+      <div class="modal-footer border-0 justify-content-center">
+        <button type="button" class="btn btn-outline-secondary px-4" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+  const _entries = {{ entries| tojson }};
+
+  function togglePwd(i) {
+    const el = document.getElementById('pwd-' + i);
+    if (!el) return;
+    const btn = el.nextElementSibling;
+    const icon = btn.querySelector('i');
+
+    if (el.type === 'password') {
+      el.type = 'text';
+      if (icon) { icon.classList.remove('bi-eye'); icon.classList.add('bi-eye-slash'); }
+    } else {
+      el.type = 'password';
+      if (icon) { icon.classList.remove('bi-eye-slash'); icon.classList.add('bi-eye'); }
+    }
+  }
+
+  function viewEntry(i) {
+    const e = _entries[i];
+    if (!e) return;
+    document.getElementById('detailTitle').textContent = e.service || 'Entry';
+    const body = `Service:  ${e.service}\nUsername: ${e.username}\nPassword: ${e.password}\nNotes:    ${e.notes || 'None'}`;
+    document.getElementById('detailBody').textContent = body;
+
+    const modal = new bootstrap.Modal(document.getElementById('detailModal'));
+    modal.show();
+  }
+
+  function copyToClipboard(text) {
+    navigator.clipboard.writeText(text).then(() => {
+      // Optional: Show toast
+    });
+  }
+</script>
+{% endblock %}
