@@ -163,5 +163,11 @@ def save_vault_with_key(entries: List[Dict], fernet_key: bytes, salt: bytes = No
     except Exception:
         pass
 
-    with open(VAULT_PATH, "w", encoding="utf-8") as f:
-        json.dump(obj, f)
+    try:
+        with open(VAULT_PATH, "w", encoding="utf-8") as f:
+            json.dump(obj, f)
+    except OSError as e:
+        # If filesystem is read-only and no remote store is configured,
+        # we can't save. Log it but don't necessarily crash the whole app.
+        print(f"FAILED TO SAVE VAULT (Local FS read-only and no remote DB): {e}")
+        raise

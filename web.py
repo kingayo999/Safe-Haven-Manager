@@ -36,12 +36,26 @@ app.secret_key = os.environ.get("SAFEHAVEN_FLASK_SECRET", "dev-secret-key")
 
 # Vercel's filesystem is read-only; use server-side session only if directory exists and is writable
 session_dir = os.path.join(os.path.dirname(__file__), '.flask_session')
-if os.access(os.path.dirname(session_dir) or '.', os.W_OK):
+# Check if we can write to the proposed session directory
+can_write_fs = False
+try:
+    if not os.path.exists(session_dir):
+        os.makedirs(session_dir, exist_ok=True)
+    test_file = os.path.join(session_dir, '.test_write')
+    with open(test_file, 'w') as f:
+        f.write('test')
+    os.remove(test_file)
+    can_write_fs = True
+except Exception:
+    pass
+
+if can_write_fs:
     app.config['SESSION_TYPE'] = 'filesystem'
     app.config['SESSION_FILE_DIR'] = session_dir
 else:
-    # Fallback to signed cookies (client-side) if filesystem is read-only
-    app.config['SESSION_TYPE'] = 'null'
+    # Fallback to standard Flask signed cookies (client-side) if filesystem is read-only
+    # This is more reliable for serverless environments than 'null'
+    app.config['SESSION_TYPE'] = None 
     app.config['SESSION_PERMANENT'] = False
 
 app.config['SESSION_COOKIE_HTTPONLY'] = True
@@ -418,6 +432,33 @@ def logout():
     return redirect(url_for('index'))
 
 
+@app.route('/debug_env')
+def debug_env():
+    """Diagnostic route to check environment and filesystem state."""
+    # Only allow for local debugging or if specifically enabled
+    if os.environ.get('FLASK_DEBUG') != '1' and os.environ.get('FLASK_ENV') != 'development':
+        return "Unauthorized", 403
+    
+    info = {
+        "remote_db_configured": bool(remote_store.get_remote_type()),
+        "remote_db_type": remote_store.get_remote_type(),
+        "vault_path_exists": os.path.exists(os.path.join(os.path.dirname(__file__), 'vault.json')),
+        "session_type": app.config.get('SESSION_TYPE'),
+        "writeable_fs": False
+    }
+    
+    try:
+        test_file = os.path.join(os.path.dirname(__file__), '.debug_test')
+        with open(test_file, 'w') as f:
+            f.write('test')
+        os.remove(test_file)
+        info["writeable_fs"] = True
+    except Exception as e:
+        info["fs_error"] = str(e)
+        
+    return info
+
+
 @app.route('/export')
 def export():
     entries = require_master()
@@ -451,12 +492,8 @@ def handle_500(e):
         tb = traceback.format_exc()
     except Exception:
         tb = str(e)
-    try:
-        with open(os.path.join(os.path.dirname(__file__), 'server_error.log'), 'a', encoding='utf-8') as fh:
-            fh.write(f"[{datetime.utcnow().isoformat()}] 500 error:\n")
-            fh.write(tb + "\n\n")
-    except Exception:
-        pass
+    # Output to stdout instead of file for serverless environments
+    print(f"500 Error: {tb}")
     return "Internal Server Error", 500
 
 
