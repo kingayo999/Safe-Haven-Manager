@@ -62,7 +62,11 @@ app.config['SESSION_COOKIE_HTTPONLY'] = True
 # Respect environment for secure cookies in production
 app.config['SESSION_COOKIE_SECURE'] = os.environ.get('FLASK_ENV', 'production') == 'production'
 app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
-Session(app)
+
+# Only initialize the extension if we are actually using a server-side session type.
+# Flask handles default cookie sessions natively without this extension.
+if app.config.get('SESSION_TYPE') is not None:
+    Session(app)
 
 
 @app.route('/', methods=['GET'])

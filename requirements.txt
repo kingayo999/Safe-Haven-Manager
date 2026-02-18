@@ -1,8 +1,3 @@
-numpy
-pandas
-matplotlib
-seaborn
-plotly
 cryptography
 flask
 Flask-Session
