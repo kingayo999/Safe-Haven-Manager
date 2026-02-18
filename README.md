@@ -1,78 +1,64 @@
-# SafeHaven
+# SafeHaven 🛡️
 
-SafeHaven is a desktop password manager (Tkinter) that stores an encrypted JSON vault.
+SafeHaven is a powerful, secure password manager featuring both a sleek **Web Interface** and a robust **Desktop Application**. It uses state-of-the-art encryption (PBKDF2-HMAC-SHA256) to keep your credentials safe.
 
-Quick start
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fkingayo999%2FSafe-Haven-Manager)
 
-Install dependencies and run:
+## 🚀 Live Demo
 
+Experience SafeHaven directly in your browser:
+**[View Live Demo on Vercel](https://github.com/kingayo999/Safe-Haven-Manager)** *(Link your Vercel deployment here)*
+
+---
+
+## 🌐 Web Manager (Flask)
+
+The web version provides a modern, responsive interface for managing your vault from any device.
+
+### Quick Start (Web)
+1. Install dependencies:
+   ```powershell
+   pip install -r requirements.txt
+   ```
+2. Run the application:
+   ```powershell
+   python web.py
+   ```
+3. Open [http://localhost:5000](http://localhost:5000)
+
+### ☁️ Deployment from GitHub
+SafeHaven is optimized for **Vercel**. Every push to the `main` branch will automatically trigger a redeploy if you link your GitHub repository to your Vercel project.
+
+---
+
+## 💻 Desktop App (Tkinter)
+
+A standalone desktop version for secure, offline password management.
+
+### Quick Start (Desktop)
 ```powershell
-pip install -r requirements.txt
 python main.py
 ```
 
-Main features
+---
 
-- Master password protected vault encrypted with Fernet (PBKDF2-HMAC-SHA256 key derivation + per-vault salt).
-- Create / Unlock vault, Add / View / Edit / Delete entries (service, username, password, notes).
-- Search/filter entries in the vault.
-- Strong password generator.
-- Auto-lock timer (configurable minutes).
-- Export vault to CSV (uses pandas if available, falls back to csv module).
-- Simple analytics: embedded Matplotlib histogram (if installed) and interactive Plotly chart (opens in browser).
+## 🔒 Security & Features
 
-Security notes
+- **End-to-End Encryption**: Master password protected vault encrypted with Fernet (PBKDF2-HMAC-SHA256 key derivation + per-vault salt).
+- **Remote Persistence**: Supports **Supabase** and **Firebase** for cloud-syncing your encrypted vault.
+- **Entry Management**: Add, View, Edit, and Delete entries with ease.
+- **Password Generator**: Built-in strong password generator.
+- **Analytics**: Interactive Plotly charts and Matplotlib histograms for vault insights.
 
-- The master password is used to derive an encryption key with PBKDF2 (200k iterations) and a random 16-byte salt stored alongside the vault.
-- If the vault was created with the older SHA-256 key method, the app will attempt legacy decryption and transparently upgrade the vault to PBKDF2+salt when you unlock it successfully.
-- Keep backups of `vault.json` (in the workspace root) and protect your master password — losing it will prevent decryption.
+## 🛠️ Configuration (Production)
 
-Missing dependencies
+To use remote storage and secure sessions, set the following environment variables:
+- `SECUREPASS_DB`: `supabase` or `firebase`
+- `SUPABASE_URL` / `SUPABASE_KEY`
+- `FIREBASE_DB_URL`
+- `SAFEHAVEN_FLASK_SECRET`: Your secret key for session encryption.
 
-- The app provides graceful fallbacks and informative messages when optional packages (NumPy, Pandas, Matplotlib, Seaborn, Plotly, cryptography) are not installed. Install the full set for best experience:
+---
 
-```powershell
-pip install numpy pandas matplotlib seaborn plotly cryptography
-```
-
-Files
-
-- `main.py` — application entrypoint.
-- `safehaven/crypto.py` — key derivation and (Fernet) encryption helpers.
-- `safehaven/storage.py` — encrypted JSON vault save/load and upgrade path.
-- `safehaven/app.py` — Tkinter GUI, search, edit, auto-lock, plotting and export features.
-
-Next steps
-
-- Run the app and test unlocking/creating a vault.
-- I can run the app locally here to smoke-test it, or add features like secure clipboard clearing, sync, or edit history — tell me which you prefer.
-
-Web mode
-
-You can run a simple browser-accessible version using Flask:
-
-```powershell
-python web.py
-# then open http://localhost:5000 in your browser
-```
-
-This web demo uses the same encrypted `vault.json` and reuses the storage/crypto code; it stores the master password temporarily in the Flask session for convenience (not recommended for production without secure server-side session management).
-
-Professional presentation
-
-- Clean responsive UI using Bootstrap with a custom theme and simple logo.
-- Server-side sessions for the web demo (`Flask-Session`).
-- Clear security section describing encryption, PBKDF2 parameters, and upgrade path from legacy SHA-256.
-- Included templates, static assets, and instructions to run the web demo — suitable for a portfolio demo.
-
-Polish / Next steps (suggested for portfolio)
-
-- Add unit tests and CI pipeline (GitHub Actions) to demonstrate engineering rigour.
-- Add automated security tests, static code analysis, and dependency checks.
-- Replace demo verification code display with email/SMS in a real deployment.
-
-Repository quality additions included
-
-- Basic unit tests (`tests/`) for `crypto` and `storage` and a CI workflow at `.github/workflows/ci.yml`.
-- `.gitignore` excludes secret and build artifacts.
-- License and polished static assets (logo, favicon, CSS) included.
+## 📄 License
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
